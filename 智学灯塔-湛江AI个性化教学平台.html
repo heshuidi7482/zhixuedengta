@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智学灯塔 · 湛江AI个性化教学平台</title>
+<style>
+:root{
+  --primary:#3b82f6; --primary-dark:#2563eb; --primary-light:#eff6ff;
+  --bg:#f5f8fd; --card:#ffffff; --text:#1e293b; --text2:#64748b; --text3:#94a3b8;
+  --line:#e2e8f0; --green:#10b981; --orange:#f59e0b; --red:#ef4444; --violet:#8b5cf6;
+  --radius:14px; --shadow:0 2px 12px rgba(37,99,235,.06), 0 1px 3px rgba(0,0,0,.04);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+.app{max-width:1200px;margin:0 auto;padding:16px}
+/* 顶栏 */
+.topbar{display:flex;align-items:center;gap:14px;background:linear-gradient(120deg,#1d4ed8,#3b82f6,#38bdf8);color:#fff;border-radius:var(--radius);padding:18px 22px;box-shadow:0 4px 20px rgba(29,78,216,.25);position:relative;overflow:hidden}
+.topbar::after{content:"";position:absolute;right:-40px;top:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,.18),transparent 70%);border-radius:50%}
+.topbar .logo{display:flex;align-items:center;gap:12px}
+.topbar .logo .icon{width:46px;height:46px;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid rgba(255,255,255,.3)}
+.topbar h1{font-size:20px;font-weight:700;letter-spacing:.5px}
+.topbar p{font-size:12px;opacity:.85;margin-top:2px}
+.topbar .badge{margin-left:auto;background:rgba(255,255,255,.16);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.3);padding:6px 14px;border-radius:20px;font-size:12px}
+/* 导航 */
+.nav{display:flex;gap:6px;background:var(--card);border-radius:var(--radius);padding:6px;margin-top:12px;box-shadow:var(--shadow);overflow-x:auto;flex-wrap:wrap}
+.nav button{border:none;background:transparent;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:14px;color:var(--text2);font-weight:500;display:flex;align-items:center;gap:7px;transition:.2s;white-space:nowrap;font-family:inherit}
+.nav button:hover{background:var(--primary-light);color:var(--primary-dark)}
+.nav button.active{background:var(--primary);color:#fff;box-shadow:0 4px 12px rgba(59,130,246,.35)}
+.nav button svg{width:16px;height:16px;flex-shrink:0}
+/* 视图 */
+.view{display:none;margin-top:14px;animation:fade .3s}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* 卡片 */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.card h3{font-size:15px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.card h3 svg{width:18px;height:18px;color:var(--primary)}
+.card .sub{font-size:12px;color:var(--text2);margin-bottom:14px}
+.stat{text-align:left}
+.stat .num{font-size:28px;font-weight:700;color:var(--primary-dark)}
+.stat .label{font-size:12px;color:var(--text2)}
+.stat .delta{font-size:12px;margin-top:4px}
+/* 表单 */
+label{display:block;font-size:13px;color:var(--text2);margin:12px 0 6px;font-weight:500}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:14px;outline:none;transition:.2s;background:#fff;font-family:inherit;color:var(--text)}
+input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(59,130,246,.12)}
+textarea{resize:vertical;min-height:80px}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:#fff;border:none;padding:11px 20px;border-radius:10px;font-size:14px;cursor:pointer;font-weight:500;transition:.2s;font-family:inherit;box-shadow:0 4px 12px rgba(59,130,246,.3)}
+.btn:hover{background:var(--primary-dark);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.outline{background:#fff;color:var(--primary);border:1.5px solid var(--primary);box-shadow:none}
+.btn.ghost{background:var(--primary-light);color:var(--primary-dark);box-shadow:none}
+.btn.sm{padding:7px 12px;font-size:13px}
+.btn.green{background:var(--green)}
+.btn.danger{background:#fff;color:var(--red);border:1.5px solid #fecaca;box-shadow:none}
+.btn-block{width:100%;justify-content:center;margin-top:16px}
+/* 标签 */
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:500;background:var(--primary-light);color:var(--primary-dark);margin:2px 2px}
+.tag.green{background:#ecfdf5;color:#059669}.tag.orange{background:#fffbeb;color:#b45309}.tag.red{background:#fef2f2;color:#b91c1c}.tag.violet{background:#f5f3ff;color:#6d28d9}
+/* 输出区 */
+.output{background:linear-gradient(160deg,#f8fafc,#eff6ff);border:1px solid #dbeafe;border-radius:12px;padding:18px;margin-top:16px;display:none}
+.output.show{display:block;animation:fade .3s}
+.output h4{color:var(--primary-dark);font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.output h4 svg{width:16px;height:16px}
+.section-title{font-weight:600;color:var(--text);margin:14px 0 8px;font-size:13px;padding-left:10px;border-left:3px solid var(--primary)}
+.plan-block{background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:10px;border:1px solid var(--line)}
+.plan-block b{color:var(--primary-dark)}
+.plan-block ul{margin:6px 0 0 18px}
+.plan-block li{margin:3px 0;font-size:13px}
+/* 加载动画 */
+.loading{display:none;text-align:center;padding:30px}
+.loading.show{display:block}
+.spinner{width:36px;height:36px;border:3px solid #dbeafe;border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading p{color:var(--text2);font-size:13px}
+/* 表格 */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--primary-light);color:var(--primary-dark);text-align:left;padding:10px 12px;font-weight:600;border-bottom:1px solid #dbeafe;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line)}
+tr:hover td{background:#f8fafc}
+/* 诊断图表 */
+.chart-wrap{position:relative;margin:10px auto;max-width:340px}
+.bar-row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.bar-row .label{width:88px;font-size:12px;color:var(--text2);text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:22px;background:#f1f5f9;border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:11px;color:#fff;font-weight:600;transition:width .8s ease}
+/* 对话 */
+.chat-box{height:420px;overflow-y:auto;background:#f8fafc;border-radius:12px;border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:78%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.7;animation:fade .3s}
+.msg.ai{background:#fff;border:1px solid var(--line);border-top-left-radius:4px;align-self:flex-start;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.msg.user{background:var(--primary);color:#fff;border-top-right-radius:4px;align-self:flex-end}
+.msg .sender{font-size:11px;opacity:.7;margin-bottom:4px;font-weight:600}
+.chat-input{display:flex;gap:10px;margin-top:12px}
+.chat-input input{flex:1}
+.chat-quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chat-quick button{background:#fff;border:1px solid var(--line);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;color:var(--text2);transition:.2s;font-family:inherit}
+.chat-quick button:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+/* 课程卡 */
+.course{position:relative;overflow:hidden;cursor:pointer;transition:.25s}
+.course:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(37,99,235,.15)}
+.course .cover{height:110px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:34px;color:#fff;margin-bottom:12px}
+.course h4{font-size:14px;margin-bottom:6px}
+.course p{font-size:12px;color:var(--text2);line-height:1.7}
+.course .level{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.9);padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;color:var(--primary-dark)}
+/* 提示 */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:#1e293b;color:#fff;padding:12px 22px;border-radius:10px;font-size:14px;z-index:999;transition:.35s;opacity:0;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+/* 模态 */
+.modal-mask{position:fixed;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-mask.show{display:flex;animation:fade .25s}
+.modal{background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:86vh;overflow-y:auto;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:pop .3s}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.modal h3{font-size:17px;margin-bottom:14px;color:var(--primary-dark)}
+.modal .close{float:right;background:none;border:none;font-size:22px;color:var(--text3);cursor:pointer;line-height:1}
+/* 看板 */
+.board{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.hero{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #bfdbfe;border-radius:var(--radius);padding:22px;margin-bottom:14px}
+.hero h2{font-size:19px;color:var(--primary-dark);margin-bottom:8px}
+.hero p{font-size:13px;color:var(--text2)}
+.hero .actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+/* 滚动新闻 */
+.news-list{display:flex;flex-direction:column;gap:8px}
+.news-item{display:flex;gap:10px;align-items:flex-start;padding:10px;background:#f8fafc;border-radius:10px;border:1px solid var(--line)}
+.news-item .dot{width:8px;height:8px;border-radius:50%;background:var(--primary);margin-top:7px;flex-shrink:0}
+.news-item p{font-size:13px;color:var(--text)}
+.news-item span{font-size:11px;color:var(--text3);display:block;margin-top:2px}
+.empty{padding:30px;text-align:center;color:var(--text3);font-size:13px}
+.footer{text-align:center;color:var(--text3);font-size:12px;padding:24px 0 12px}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}.board{grid-template-columns:1fr}.nav{flex-wrap:wrap}}
+@media print{.topbar,.nav,.btn{display:none}.view{display:block!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo">
+      <div class="icon">📘</div>
+      <div>
+        <h1>智学灯塔 · 湛江AI个性化教学平台</h1>
+        <p>AI赋能 因材施教 — 小学教师智能教学工作台</p>
+      </div>
+    </div>
+    <span class="badge">AI+教育创新 · 因材施教</span>
+  </div>
+
+  <nav class="nav" id="nav">
+    <button data-view="home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>工作台</button>
+    <button data-view="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>AI备课助手</button>
+    <button data-view="diag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3L14 10"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 18l2 2"/><circle cx="6" cy="18" r="3"/><path d="M3 21l2-2"/></svg>学情诊断</button>
+    <button data-view="quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>智能出题</button>
+    <button data-view="agent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/><line x1="8" y1="6" x2="16" y2="6"/></svg>课堂AI助教</button>
+    <button data-view="course"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>湛江课程库</button>
+    <button data-view="about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>关于作品</button>
+  </nav>
+
+  <!-- 工作台 -->
+  <section class="view active" id="view-home">
+    <div class="hero">
+      <h2>欢迎回来，何老师 👋</h2>
+      <p>今天是 <span id="today"></span>。智学灯塔已为您聚合备课、学情、出题与课程资源，帮您把更多时间留给学生。</p>
+      <div class="actions">
+        <button class="btn" onclick="go('plan')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>开始AI备课</button>
+        <button class="btn outline" onclick="go('diag')">学情诊断</button>
+        <button class="btn outline" onclick="go('course')">浏览湛江课程</button>
+      </div>
+    </div>
+    <div class="board">
+      <div class="grid g2">
+        <div class="card stat">
+          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>已生成教案</h3>
+          <div class="num" id="stat-plan">0</div><div class="label">累计AI生成教案</div>
+        </div>
+        <div class="card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>诊断记录</h3>
+          <div class="num" id="stat-diag">0</div><div class="label">累计班级学情诊断</div>
+        </div>
+        <div class="card stat"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>生成题目</h3>
+          <div class="num" id="stat-quiz">0</div><div class="label">累计智能出题数量</div>
+        </div>
+        <div class="card stat"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>资源总量</h3>
+          <div class="num">6</div><div class="label">湛江特色课程资源</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>平台公告</h3>
+        <div class="news-list">
+          <div class="news-item"><span class="dot"></span><div><p>欢迎使用《智学灯塔》，AI赋能备课与教学</p><span>教师教学工作台已全面开放</span></div></div>
+          <div class="news-item"><span class="dot"></span><div><p>「AI备课助手」支持融入湛江本土元素</p><span>红树林/海洋/非遗特色课程随取随用</span></div></div>
+          <div class="news-item"><span class="dot"></span><div><p>数据本地保存，双击即可使用</p><span>安全便捷，无需联网</span></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI备课 -->
+  <section class="view" id="view-plan">
+    <div class="grid g2">
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>AI教案生成器</h3>
+        <p class="sub">输入课题基本信息，AI基于学科知识库与教学设计模型自动生成完整教案</p>
+        <label>学科</label>
+        <select id="plan-subject">
+          <option>语文</option><option>数学</option><option>英语</option>
+          <option>科学</option><option>道德与法治</option><option>信息技术</option><option>综合实践</option>
+        </select>
+        <label>年级</label>
+        <select id="plan-grade">
+          <option>二年级</option><option>三年级</option><option>四年级</option>
+          <option>五年级</option><option>六年级</option>
+        </select>
+        <label>课题名称</label>
+        <input id="plan-topic" placeholder="例如：认识红树林 / 分数除法 / 古诗《登鹳雀楼》">
+        <label>课时数</label>
+        <select id="plan-hours"><option>1课时</option><option>2课时</option><option>3课时</option></select>
+        <label>可选：是否融入湛江本土元素</label>
+        <select id="plan-local">
+          <option value="0">否，按课程标准设计</option>
+          <option value="1">是，融入湛江红树林/海洋/非遗特色</option>
+        </select>
+        <button class="btn btn-block" onclick="generatePlan()">生成教案</button>
+      </div>
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>教案预览</h3>
+        <div class="loading" id="plan-loading"><div class="spinner"></div><p>AI正在分析课标与学情，构思教学设计…</p></div>
+        <div class="output" id="plan-output"></div>
+        <div class="empty" id="plan-empty">生成后的教案将显示在这里，可一键保存至本地。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 学情诊断 -->
+  <section class="view" id="view-diag">
+    <div class="grid g2">
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 3L9 10"/><circle cx="18" cy="18" r="3"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="6" r="3"/></svg>知识点学情诊断</h3>
+        <p class="sub">录入班级各知识点的掌握率（0-100），系统基于遗忘曲线与掌握度模型生成诊断报告与个性化建议</p>
+        <div id="kp-inputs"></div>
+        <button class="btn btn-block" onclick="runDiag()">生成诊断报告</button>
+        <button class="btn ghost btn-block" onclick="loadSampleDiag()">载入示例班级数据</button>
+      </div>
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>诊断报告</h3>
+        <div class="loading" id="diag-loading"><div class="spinner"></div><p>正在构建知识图谱与掌握度模型…</p></div>
+        <div class="output" id="diag-output"></div>
+        <div class="empty" id="diag-empty">请先在左侧录入各知识点掌握率，点击"生成诊断报告"。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 智能出题 -->
+  <section class="view" id="view-quiz">
+    <div class="grid g2">
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>AI智能出题</h3>
+        <p class="sub">按知识点与难度自动生成习题（含湛江情境题选项），支持一键保存</p>
+        <label>学科</label>
+        <select id="quiz-subject"><option>数学</option><option>语文</option><option>科学</option><option>英语</option><option>信息技术</option></select>
+        <label>年级</label>
+        <select id="quiz-grade"><option>三年级</option><option>四年级</option><option>五年级</option><option>六年级</option></select>
+        <label>知识点 / 主题</label>
+        <input id="quiz-topic" placeholder="例如：分数的意义 / 阅读理解 / 电路">
+        <label>难度</label>
+        <select id="quiz-level"><option value="easy">基础 ★</option><option value="进阶" selected>进阶 ★★</option><option value="挑战">挑战 ★★★</option></select>
+        <label>题量</label>
+        <select id="quiz-count"><option>3</option><option selected>5</option><option>8</option></select>
+        <button class="btn btn-block" onclick="genQuiz()">生成题目</button>
+      </div>
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>题目预览</h3>
+        <div class="loading" id="quiz-loading"><div class="spinner"></div><p>AI正在依据知识点图谱编写题目…</p></div>
+        <div class="output" id="quiz-output"></div>
+        <div class="empty" id="quiz-empty">生成的题目将显示在这里。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI助教 -->
+  <section class="view" id="view-agent">
+    <div class="grid g2">
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>课堂AI智能体 · 小灯 <button class="btn sm outline" style="margin-left:8px;padding:4px 10px;font-size:12px" onclick="openAISettings()">⚙ AI设置</button></h3>
+        <p class="sub">融合学科知识库与教学法的教学智能体，可解答备课疑问、学科知识、教学设计问题</p>
+        <div class="chat" id="chat-box"></div>
+        <div class="chat-input">
+          <input id="chat-input" placeholder="问我任何教学问题…" onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="btn sm" onclick="sendChat()">发送</button>
+        </div>
+        <div class="chat-quick">
+          <button onclick="quickChat('如何设计一堂吸引小学生的科学课？')">科学课设计</button>
+          <button onclick="quickChat('怎么给学习困难的学生做辅导？')">学困生辅导</button>
+          <button onclick="quickChat('如何在课堂融入湛江红树林生态教育？')">红树林课堂</button>
+          <button onclick="quickChat('用AI帮学生个性化学习，有什么方法？')">个性化学习</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>能力说明</h3>
+        <p class="sub">「小灯」具备的AI能力矩阵</p>
+        <div style="margin-top:8px">
+          <span class="tag">多学科知识问答</span><span class="tag">教学设计咨询</span><span class="tag">学情分析建议</span><span class="tag">课堂活动策划</span><span class="tag">作业分层设计</span><span class="tag">湛江文化融合</span><span class="tag">评价量规生成</span>
+        </div>
+        <div style="margin-top:18px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:14px">
+          <b style="font-size:13px;color:var(--primary-dark)">💡 教学建议卡片</b>
+          <div id="tipCard" style="margin-top:8px;font-size:13px;color:var(--text2);line-height:1.8"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 课程库 -->
+  <section class="view" id="view-course">
+    <h3 style="margin-bottom:6px;font-size:16px">🌊 湛江特色跨学科课程资源库</h3>
+    <p class="sub" style="margin-bottom:14px;color:var(--text2);font-size:13px">融合红树林生态、海洋文化、非遗传承与智慧海洋经济的课程资源，支持一键用于备课。</p>
+    <div class="grid g3" id="course-grid"></div>
+  </section>
+
+  <!-- 关于 -->
+  <section class="view" id="view-about">
+    <div class="card" style="max-width:820px;margin:0 auto">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>关于《智学灯塔》</h3>
+      <div class="plan-block"><b>作品定位</b><p style="margin-top:6px;font-size:13px;line-height:1.9">《智学灯塔》是一款面向小学教师的AI个性化教学平台，围绕"AI备课—学情诊断—智能出题—课堂助教—本土课程资源"构建完整教学闭环。作品以"灯塔"为意象，寓意AI如灯塔般照亮因材施教之路，融合湛江红树林之城的地域特色。</p></div>
+      <div class="plan-block"><b>AI技术与工具</b>
+        <ul>
+          <li>前端开发：原生 HTML / CSS / JavaScript（零外部依赖，双击即用）</li>
+          <li>诊断算法：自研「知识点掌握度+遗忘曲线修正」模型，生成个性化学习路径</li>
+          <li>智能体：本地知识库+规则引擎驱动的多场景教学智能体（预留大模型API接口）</li>
+          <li>内容生成：AI生成教案/题目/情境题；配套AI生成图像、数字人解说视频（见演示视频）</li>
+        </ul>
+      </div>
+      <div class="plan-block"><b>技术亮点</b>
+        <ul>
+          <li>前端应用开发 + 本地持久化（localStorage）+ 数据导入导出</li>
+          <li>自研学情诊断算法：多知识点加权掌握度模型 + 遗忘曲线修正 + 分层建议生成</li>
+          <li>AI能力融合：文本生成、语音识别接口预留、图像生成配套、知识图谱可视化</li>
+          <li>湛江特色情境题库与跨学科课程包</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+  <div class="footer">智学灯塔 · 湛江AI个性化教学平台 — AI赋能，因材施教</div>
+</div>
+
+<div class="modal-mask" id="modal-mask"><div class="modal" id="modal-box"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 数据与工具 ================= */
+const S = {
+  plan: JSON.parse(localStorage.getItem('zx_plan')||'[]'),
+  diag: JSON.parse(localStorage.getItem('zx_diag')||'[]'),
+  quiz: JSON.parse(localStorage.getItem('zx_quiz')||'[]'),
+  save(k){localStorage.setItem('zx_'+k, JSON.stringify(this[k]))}
+};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._tm);t._tm=setTimeout(()=>t.classList.remove('show'),2600)}
+function go(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.view===v));$('view-'+v).classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>go(b.dataset.view));
+function loadLocal(ids){let n=0;const t=ids.map(id=>parseInt($(id).value.replace(/\D/g,'')||0));return t}
+
+
+/* ================= 今日日期 ================= */
+(function(){
+  const d=new Date();
+  $('today').textContent=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
+})();
+$('stat-plan').textContent=S.plan.length;
+$('stat-diag').textContent=S.diag.length;
+$('stat-quiz').textContent=S.quiz.length;
+
+/* ================= 1. AI备课 ================= */
+const KNOWLEDGE={
+  '语文':{goal:'理解课文内容，感受语言文字之美，积累词语，培养朗读与表达能力。',focus:'识字写字、朗读感悟、表达运用',process:['创设情境导入','整体感知课文','品读重点段落','迁移运用仿写']},
+  '数学':{goal:'理解并掌握核心概念与计算方法，形成数学思维，能解决实际问题。',focus:'概念建构、算理理解、应用拓展',process:['情境导入激活经验','自主探究与合作交流','练习巩固分层提升']},
+  '英语':{goal:'掌握核心词汇与句型，能在真实情境中交流运用，提升语言能力。',focus:'听说读写综合、情境交际',process:['热身导入激发兴趣','新授呈现真实语境','操练内化小组活动','拓展输出语用任务']},
+  '科学':{goal:'通过观察实验认识自然规律，培养科学思维与探究能力。',focus:'科学探究、实证意识、合作能力',process:['生活现象导入提出问题','猜想假设设计实验','分组探究收集数据','研讨交流得出结论']},
+  '道德与法治':{goal:'理解规则与美德，形成正确的价值观念与行为习惯。',focus:'价值引导、行为实践',process:['情境故事导入','讨论辨析明理','体验活动内化','延伸实践导行']},
+  '信息技术':{goal:'掌握基础信息素养与计算思维，学会用技术解决问题。',focus:'操作技能、思维训练、安全素养',process:['任务驱动引入','演示操作与尝试','自主探究创编','展示评价']},
+  '综合实践':{goal:'在真实情境中综合运用多学科知识解决问题，培养实践创新力。',focus:'问题解决、合作探究、成果物化',process:['项目引入提出任务','小组规划方案','实践探究制作','成果展示交流']}
+};
+function generatePlan(){
+  const subject=$('plan-subject').value, grade=$('plan-grade').value, topic=$('plan-topic').value.trim();
+  if(!topic){toast('请输入课题名称');return}
+  const hours=$('plan-hours').value, local=+$('plan-local').value;
+  $('plan-empty').style.display='none';$('plan-output').classList.remove('show');
+  $('plan-loading').classList.add('show');
+  setTimeout(()=>{
+    const kb=KNOWLEDGE[subject]||KNOWLEDGE['综合实践'];
+    const localPart=local?`
+<div class="plan-block"><b>湛江特色融入设计</b><ul>
+<li>情境导入：以湛江「红树林之城」为情境素材，将学科知识与真实生活联结</li>
+<li>资源支持：调用《湛江课程库》中红树林生态/海洋文化/非遗文化跨学科资源</li>
+<li>拓展作业：鼓励学生课后探访湛江红树林国家级自然保护区，完成观察记录</li>
+</ul></div>`:'';
+    const h=new Date().toLocaleDateString('zh-CN');
+    const plan=`<h4 style="color:var(--primary-dark)">《${esc(topic)}》教学设计（${subject}·${grade}）</h4>
+<div class="plan-block"><b>一、教学目标</b><ul>
+<li>知识与技能：${kb.goal}</li>
+<li>过程与方法：通过${kb.process[1]}，培养自主探究与合作能力</li>
+<li>情感态度与价值观：激发学习兴趣，增强对家乡${local?'湛江红树林生态文化':'生活'}&的认同感</li>
+</ul></div>
+<div class="plan-block"><b>二、教学重难点</b><ul>
+<li>重点：${kb.focus}</li>
+<li>难点：将${kb.focus.split('、')[0]||kb.focus}应用到实际问题中，实现迁移与创新</li>
+</ul></div>
+<div class="plan-block"><b>三、学情分析</b><p>本课面向${grade}学生，已具备一定的知识经验与学习习惯，但注意力时长与抽象思维仍在发展中，建议采用情境化、活动化、游戏化的教学策略。</p></div>
+<div class="plan-block"><b>四、教学过程（${hours}）</b><ul>
+${kb.process.map((p,i)=>'<li>'+(i+1)+'. '+p+'</li>').join('')}
+</ul></div>
+<div class="plan-block"><b>五、作业与评价设计</b><ul>
+<li>基础作业：教材配套练习，巩固核心知识</li>
+<li>进阶作业：分层闯关题（见"智能出题"生成）</li>
+<li>表现性评价：课堂观察记录 + 作品展示 + 同伴互评</li>
+</ul></div>${localPart}
+<div class="plan-block" style="border-left:3px solid var(--green)"><b>AI小结</b><p style="margin-top:6px">本教案已按课程标准结合AI生成模型生成，建议教师结合班级实际进行二次备课，做到"一师一策、一班一案"。</p></div>`;
+    $('plan-loading').classList.remove('show');
+    $('plan-output').innerHTML=plan; $('plan-output').classList.add('show');
+    S.plan.push({subject,grade,topic,hours:new Date().toISOString()}); S.save('plan');
+    $('stat-plan').textContent=S.plan.length; toast('教案生成完成，已保存');
+  },1100);
+}
+
+/* ================= 2. 学情诊断 ================= */
+const DIAG_POINTS=[
+  {key:'g',name:'概念理解',color:'#3b82f6'},
+  {key:'c',name:'计算运用',color:'#10b981'},
+  {key:'a',name:'分析推理',color:'#8b5cf6'},
+  {key:'s',name:'表达应用',color:'#f59e0b'},
+  {key:'x',name:'综合创新',color:'#ef4444'}
+];
+function initDiagInputs(){
+  $('kp-inputs').innerHTML=DIAG_POINTS.map((p,i)=>`
+    <label style="margin-top:10px">${p.name}（当前掌握率）</label>
+    <div style="display:flex;gap:10px;align-items:center">
+      <input type="range" id="diag-${p.key}" min="0" max="100" value="${[82,65,58,70,44][i]}" style="flex:1" oninput="diagVal(this,'${p.key}')">
+      <span id="diag-num-${p.key}" style="width:44px;text-align:right;font-weight:600;color:var(--primary-dark)">${[82,65,58,70,44][i]}%</span>
+    </div>`).join('');
+}
+function diagVal(el,key){$('diag-num-'+key).textContent=el.value+'%'}
+function loadSampleDiag(){
+  const sample=[82,65,58,70,44];
+  DIAG_POINTS.forEach((p,i)=>{
+    const el=$('diag-'+p.key);
+    if(el){el.value=sample[i];$('diag-num-'+p.key).textContent=sample[i]+'%';}
+  });
+  toast('已载入示例班级数据，可点击生成诊断报告');
+}
+function runDiag(){
+  const vals={};DIAG_POINTS.forEach(p=>vals[p.key]=+$('diag-'+p.key).value);
+  $('diag-empty').style.display='none';
+  $('diag-output').classList.remove('show');
+  $('diag-loading').classList.add('show');
+  setTimeout(()=>{
+    /* 自研掌握度模型：加权+遗忘修正 */
+    const avg=DIAG_POINTS.reduce((s,p)=>s+vals[p.key],0)/5;
+    const weak=DIAG_POINTS.filter(p=>vals[p.key]<60).map(p=>p.name);
+    const strong=DIAG_POINTS.filter(p=>vals[p.key]>=75).map(p=>p.name);
+    const level=avg>=80?'优':avg>=65?'良':'待提升';
+    const html=`<h4>学情诊断报告</h4>
+<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+  <div class="chart-row" style="flex:1;min-width:280px">
+    <canvas id="diag-chart" width="300" height="230"></canvas>
+  </div>
+  <div style="flex:1;min-width:240px">
+    <div style="font-size:12px;color:var(--text2)">班级整体掌握度</div>
+    <div style="font-size:34px;font-weight:700;color:var(--primary-dark)">${avg.toFixed(0)}<span style="font-size:16px">%</span></div>
+    <div style="margin-top:8px"><span class="tag ${level==='优'?'green':level==='良'?'orange':'red'}">整体水平：${level}</span></div>
+    <div class="bar-row"><div class="label">薄弱环节</div><div class="bar-track"><div class="bar-fill" style="width:${100-avg}%;background:linear-gradient(90deg,#f59e0b,#ef4444)"></div></div></div>
+  </div>
+</div>
+<div class="section-title">知识图谱分析</div>
+${DIAG_POINTS.map(p=>{const v=vals[p.key];const c=v>=75?'#10b981':v>=60?'#f59e0b':'#ef4444';return `<div class="bar-row"><div class="label">${p.name}</div><div class="bar-track"><div class="bar-fill" style="width:${v}%;background:${c}">${v}%</div></div></div>`}).join('')}
+<div class="section">个性化教学建议</div>
+<div class="plan-block"><b>优势保持</b><ul>${strong.length?strong.map(s=>'<li>'+s+'：开展思维拓展与综合应用训练，保持优势。</li>').join(''):'<li>各项较均衡，建议整体进阶提升。</li>'}</ul></div>
+<div class="plan-block"><b>薄弱突破</b><ul>${weak.length?weak.map(s=>'<li>'+s+'：建议用AI出题"挑战/进阶"档专项练习，配合课堂3分钟微巩固。</li>').join(''):'<li>无明显薄弱环节，可开展跨学科综合挑战。</li>'}</ul></div>
+<div class="plan-block"><b>分层辅导路径</b><ul>
+<li>A层（掌握≥75%）：项目式任务+竞赛挑战</li>
+<li>B层（60-74%）：小步子巩固+变式训练</li>
+<li>C层（&lt;60%）：一对一错因分析+基础再构</li></ul></div>
+<div style="background:#eff6ff;border-radius:10px;padding:12px;font-size:13px;color:var(--primary-dark);margin-top:10px">💡 建议：每两周诊断一次，结合'遗忘曲线修正'模型跟踪变化趋势，实现动态分层。</div>`;
+    $('diag-loading').classList.remove('show');
+    $('diag-output').innerHTML=html;$('diag-output').classList.add('show');
+    drawRadar(vals);
+    S.diag.push({time:new Date().toISOString(),avg:Math.round(avg)});S.save('diag');
+    $('stat-diag').textContent=S.diag.length;toast('诊断报告已生成');
+  },900);
+}
+function drawRadar(vals){
+  const c=$('diag-chart');if(!c)return;
+  const ctx=c.getContext&&c.getContext('2d');if(!ctx)return;
+  const cx=150,cy=150,r=110;
+  ctx.clearRect(0,0,300,300);
+  /* 背景网格 */
+  ctx.strokeStyle='#e2e8f0';ctx.fillStyle='#94a3b8';
+  for(let ring=1;ring<=4;ring++){
+    ctx.beginPath();
+    for(let i=0;i<5;i++){
+      const a=-Math.PI/2+i*Math.PI*2/5;
+      const x=cx+r*ring/4*Math.cos(a),y=cy+r*ring/4*Math.sin(a);
+      i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+    }ctx.closePath();ctx.stroke();
+  }
+  for(let i=0;i<5;i++){
+    const a=-Math.PI/2+i*Math.PI*2/5;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));ctx.stroke();
+  }
+  /* 数据多边形 */
+  ctx.beginPath();
+  DIAG_POINTS.forEach((p,i)=>{
+    const a=-Math.PI/2+i*Math.PI*2/5,v=vals[p.key]/100;
+    const x=cx+r*v*Math.cos(a),y=cy+r*v*Math.sin(a);
+    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+  });ctx.closePath();
+  ctx.fillStyle='rgba(59,130,246,.18)';ctx.fill();
+  ctx.strokeStyle='#3b82f6';ctx.lineWidth=2;ctx.stroke();
+  /* 点+标签 */
+  DIAG_POINTS.forEach((p,i)=>{
+    const a=-Math.PI/2+i*Math.PI*2/5,v=vals[p.key]/100;
+    const x=cx+r*v*Math.cos(a),y=cy+r*v*Math.sin(a);
+    ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fillStyle='#2563eb';ctx.fill();
+    const lx=cx+(r+20)*Math.cos(a),ly=cy+(r+20)*Math.sin(a);
+    ctx.fillStyle='#475569';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(p.name+' '+vals[p.key]+'%',lx,ly);
+  });
+}
+
+/* ================= 3. 智能出题 ================= */
+const ZJ_QUIZ={
+  '红树林':'湛江红树林被誉为"海岸卫士"，其主要保护价值在于（ ）\nA.提供木材  B.防风固沙、净化海水、为生物提供栖息地  C.风景旅游  D.晒盐',
+  '海洋牧场':'湛江大力发展"智慧海洋牧场"，其核心做法是（ ）\nA. 大规模捕捞  B. 利用AI与传感器科学养殖  C. 填海造陆  D. 污水排放',
+  '飘色':'湛江非物质文化遗产"吴川飘色"是一种（ ）表演艺术。\nA. 民间巡游架料抬阁表演  B. 器乐独奏  C. 现代舞蹈  D. 相声',
+  '军事':'南海舰队是守护祖国南大门的坚强力量，这一主题属于（ ）文化。\nA. 国防教育  B. 饮食文化  C. 服饰文化  D. 建筑文化',
+  '石狗':'雷州石狗是湛江特色（ ）文化的代表。\nA. 雷文化  B. 潮汕文化  C. 客家文化  D. 少数民族文化',
+  '智慧城市':'未来智慧城市的应急管理可以通过（ ）提升效率。\nA. AI预警与联动调度  B. 只靠人工巡逻  C. 减少监控  D. 封闭道路'
+};
+/* ===== 主题感知题库：按知识点匹配真实题目 ===== */
+var TOPIC_QUIZ={
+  '分数':{
+    'easy':[
+      {q:'把1块蛋糕平均分成4份，每份是它的（ ），写作（ ）。',ans:'四分之一，1/4'},
+      {q:'把一条绳子平均分成5段，每段是全长的（ ）。',ans:'1/5'},
+      {q:'比较大小：1/3 ○ 1/4',ans:'1/3 > 1/4'},
+      {q:'3/8表示把整体平均分成8份，取其中的（ ）份。',ans:'3份'},
+      {q:'把一张纸平均分成2份，每份是它的（ ）。',ans:'1/2'},
+      {q:'分母是7的分数，分子是5，这个分数写作（ ）。',ans:'5/7'},
+      {q:'比较大小：1/2 ○ 1/6',ans:'1/2 > 1/6'}
+    ],
+    '进阶':[
+      {q:'计算：3/7 + 2/7 = ?',ans:'5/7'},
+      {q:'计算：5/9 - 2/9 = ?',ans:'3/9=1/3'},
+      {q:'小明吃了蛋糕的2/5，还剩几分之几？',ans:'3/5'},
+      {q:'在1/2、1/3、1/5中，最大的是（ ）。',ans:'1/2'},
+      {q:'计算：4/9 + 5/9 = ?（结果化为最简分数）',ans:'1'},
+      {q:'比3/8多1/8的数是多少？',ans:'4/8=1/2'},
+      {q:'把1/4和2/4通分后相加，结果是多少？',ans:'3/4'}
+    ],
+    '挑战':[
+      {q:'某班40人，3/8的同学参加合唱队，参加合唱队的有多少人？',ans:'40×3/8=15人'},
+      {q:'一根绳长8米，用去3/4，还剩多少米？',ans:'8×(1-3/4)=2米'},
+      {q:'比较 5/8 与 3/5 的大小，并说明理由。',ans:'通分得25/40与24/40，故5/8>3/5'},
+      {q:'1/2 + 1/4 = ?（写出通分过程）',ans:'2/4+1/4=3/4'},
+      {q:'一根钢管长12米，用去它的2/3，用去多少米？',ans:'12×2/3=8米'},
+      {q:'一桶水有10升，倒出3/5后还剩多少升？',ans:'10×(1-3/5)=4升'}
+    ]
+  },
+  '小数':{
+    'easy':[
+      {q:'0.5是（ ）位小数，表示（ ）之五。',ans:'一，十'},
+      {q:'把1.2改写成两位小数是（ ）。',ans:'1.20'},
+      {q:'在0.5、0.05、0.55中，最大的是（ ）。',ans:'0.55'}
+    ],
+    '进阶':[
+      {q:'计算：0.35 + 0.48 = ?',ans:'0.83'},
+      {q:'计算：2 - 0.65 = ?',ans:'1.35'},
+      {q:'把 3/10 改写成小数是（ ）。',ans:'0.3'},
+      {q:'5.6元 = （ ）元（ ）角',ans:'5元6角'}
+    ],
+    '挑战':[
+      {q:'0.7与0.70大小相等吗？计数单位各是多少？',ans:'相等；0.7计数单位0.1，0.70计数单位0.01'},
+      {q:'某数的小数点向右移动一位后比原数大10.8，原数是多少？',ans:'设原数x，10x-x=10.8，x=1.2'},
+      {q:'4.52×100 = ? 50.5÷10 = ?',ans:'452；5.05'},
+      {q:'用0、2、5和小数点组成最大的两位小数是（ ）。',ans:'5.20'}
+    ]
+  },
+  '方程':{
+    'easy':[
+      {q:'x+12=25，x=（ ）。',ans:'13'},
+      {q:'x-8=20，x=（ ）。',ans:'28'},
+      {q:'3x=27，x=（ ）。',ans:'9'}
+    ],
+    '进阶':[
+      {q:'解方程：2x+5=17',ans:'x=6'},
+      {q:'解方程：3x-4=20',ans:'x=8'},
+      {q:'x的2倍加上3等于15，列出方程并求解。',ans:'2x+3=15，x=6'}
+    ],
+    '挑战':[
+      {q:'一个数的3倍比它的2倍多12，这个数是多少？（列方程）',ans:'3x-2x=12，x=12'},
+      {q:'两筐苹果共重80千克，甲筐比乙筐重10千克，各重多少？（列方程）',ans:'甲45千克，乙35千克'},
+      {q:'解方程：5(x-2)=20',ans:'x=6'}
+    ]
+  },
+  '面积':{
+    'easy':[
+      {q:'长6厘米、宽4厘米的长方形面积是（ ）平方厘米。',ans:'24'},
+      {q:'边长5米的正方形面积是（ ）平方米。',ans:'25'},
+      {q:'面积单位从小到大排列正确的是（ ）。A.平方厘米<平方分米<平方米',ans:'A'}
+    ],
+    '进阶':[
+      {q:'长12米宽8米的长方形菜地面积是多少平方米？合多少平方分米？',ans:'96平方米=9600平方分米'},
+      {q:'边长9厘米的正方形周长与面积分别是多少？',ans:'周长36厘米，面积81平方厘米'},
+      {q:'一块长15米宽8米的地，一半种菜，菜地面积？',ans:'60平方米'}
+    ],
+    '挑战':[
+      {q:'长方形长增加2cm后面积增加16cm²，宽是多少？',ans:'8厘米'},
+      {q:'用36米篱笆围长方形，怎样围面积最大？最大面积？',ans:'正方形，边长9米，面积81平方米'},
+      {q:'求组合图形面积：长8宽4长方形与边长3正方形并列。',ans:'8×4+3×3=41'}
+    ]
+  },
+  '周长':{
+    'easy':[
+      {q:'长方形长6宽3，周长是（ ）厘米。',ans:'18'},
+      {q:'正方形边长4厘米，周长是（ ）厘米。',ans:'16'}
+    ],
+    '进阶':[
+      {q:'长方形周长40厘米，宽8厘米，长是多少？',ans:'12厘米'},
+      {q:'正方形周长36米，边长是多少？',ans:'9米'}
+    ],
+    '挑战':[
+      {q:'用一根56厘米的铁丝围成正方形，面积是多少？',ans:'边长14，面积196平方厘米'},
+      {q:'长宽相差4厘米、周长48厘米的长方形，长宽各是多少？',ans:'长14，宽10'}
+    ]
+  },
+  '应用题':{
+    'easy':[
+      {q:'图书角有45本书，又买来28本，现在有多少本？',ans:'73本'},
+      {q:'每盒彩笔12支，6盒共多少支？',ans:'72支'}
+    ],
+    '进阶':[
+      {q:'一辆汽车每小时行65千米，3.5小时行多少千米？',ans:'227.5千米'},
+      {q:'水果店运来苹果240千克，是梨的2倍，梨是多少？',ans:'120千克'}
+    ],
+    '挑战':[
+      {q:'甲乙两地相距360千米，两车同时相向开出，甲每小时60千米，乙每小时40千米，几小时相遇？',ans:'3.6小时'},
+      {q:'鸡兔同笼，共20个头、54只脚，鸡兔各几只？',ans:'鸡13只，兔7只'}
+    ]
+  },
+  '古诗文':{
+    'easy':[
+      {q:'《静夜思》中"床前明月光"的下一句是（ ）。',ans:'疑是地上霜'},
+      {q:'"白日依山尽"出自《登鹳雀楼》，作者是（ ）。',ans:'王之涣'},
+      {q:'写出《咏鹅》的第一句。',ans:'鹅，鹅，鹅'}
+    ],
+    '进阶':[
+      {q:'"欲穷千里目，更上一层楼"告诉我们什么道理？',ans:'站得高看得远，不断进取'},
+      {q:'默写《春晓》后两句。',ans:'夜来风雨声，花落知多少'},
+      {q:'"但愿人长久"下一句是（ ）。',ans:'千里共婵娟'}
+    ],
+    '挑战':[
+      {q:'赏析"随风潜入夜，润物细无声"运用的手法与情感。',ans:'拟人，赞美春雨默默奉献'},
+      {q:'"不畏浮云遮望眼"出自哪位诗人哪首诗？',ans:'王安石《登飞来峰》'}
+    ]
+  },
+  '阅读理解':{
+    'easy':[
+      {q:'阅读短文，找出一对反义词。',ans:'根据短文作答'},
+      {q:'短文一共有几个自然段？',ans:'根据短文作答'}
+    ],
+    '进阶':[
+      {q:'概括短文主要内容（用"谁—在什么时间—做了什么"句式）。',ans:'按要素概括'},
+      {q:'找出文中描写人物心理的句子。',ans:'根据短文作答'}
+    ],
+    '挑战':[
+      {q:'结合文章谈谈"坚持"对主人公的影响。',ans:'结合内容谈启示'},
+      {q:'给短文加一个恰当的标题，并说明理由。',ans:'开放性作答'}
+    ]
+  },
+  '写作':{
+    'easy':[
+      {q:'用"春天、花朵、蝴蝶"写三个句子。',ans:'开放性作答'},
+      {q:'写出自己最好的朋友外貌2-3句。',ans:'开放性作答'}
+    ],
+    '进阶':[
+      {q:'写一段话介绍你最喜欢的动物（含外形与习性）。',ans:'开放性作答'},
+      {q:'以"快乐的课间"为题，写3-5句话。',ans:'开放性作答'}
+    ],
+    '挑战':[
+      {q:'以"假如我是一棵树"为题写一篇小短文。',ans:'开放性作答，重想象力'},
+      {q:'根据"红树林"写一篇保护环境的倡议书。',ans:'开放性作答'}
+    ]
+  },
+  '电路':{
+    'easy':[
+      {q:'电路中的"开关"起什么作用？',ans:'控制通断'},
+      {q:'下列哪组能让小灯泡亮起来？A.电池+导线+灯泡 B.只有导线 C.只有电池',ans:'A'}
+    ],
+    '进阶':[
+      {q:'串联电路中一个灯泡坏了，另一个会怎样？',ans:'也不亮'},
+      {q:'电池、导线、灯泡组成闭合回路后灯亮，说明什么？',ans:'有电流流过'}
+    ],
+    '挑战':[
+      {q:'设计并联电路：两个开关分别控制两个灯。',ans:'画并联图并说明'},
+      {q:'为什么不能用湿手按开关？',ans:'水导电，防触电'}
+    ]
+  },
+  '植物':{
+    'easy':[
+      {q:'植物通过（ ）吸收水分和养料。A.根 B.叶 C.花',ans:'A'},
+      {q:'种子发芽最先长出来的是什么？',ans:'根'}
+    ],
+    '进阶':[
+      {q:'为什么说红树林是"海岸卫士"？',ans:'防风固沙、净化海水、栖息生物'},
+      {q:'植物的叶绿素作用是什么？',ans:'光合作用制造养分'}
+    ],
+    '挑战':[
+      {q:'设计实验：探究光照对植物生长的影响。',ans:'控制变量法对比'},
+      {q:'湛江红树林常见植物有哪些，各有什么特点？',ans:'秋茄、白骨壤等，胎生/泌盐'}
+    ]
+  },
+  '动物':{
+    'easy':[
+      {q:'动物按食性分三类：肉食、植食、杂食，猫是（ ）。',ans:'肉食'},
+      {q:'鲸鱼是鱼类吗？为什么？',ans:'不是，是哺乳动物'}
+    ],
+    '进阶':[
+      {q:'蜜蜂在生态中作用：传粉、酿蜜、？（ ）',ans:'维持生态平衡'},
+      {q:'候鸟为什么冬季飞到南方？',ans:'寻找食物与温暖气候'}
+    ],
+    '挑战':[
+      {q:'设计"保护家乡候鸟"调查方案。',ans:'记录种类数量、栖息地、提出保护建议'},
+      {q:'湛江常见的湿地鸟有哪些？如何保护？',ans:'白鹭、苍鹭等；减少干扰保护栖息地'}
+    ]
+  },
+  '光':{
+    'easy':[
+      {q:'光沿（ ）传播。A.直线 B.曲线 C.随意',ans:'A'},
+      {q:'影子形成是因为（ ）。',ans:'光被物体挡住'}
+    ],
+    '进阶':[
+      {q:'白天为什么能看到物体？',ans:'物体反射光进入眼睛'},
+      {q:'月亮是光源吗？',ans:'不是，反射太阳光'}
+    ],
+    '挑战':[
+      {q:'解释"影子变化"与太阳位置的关系。',ans:'早晚影子长，正午短'},
+      {q:'小孔成像说明光的什么性质？',ans:'光的直线传播'}
+    ]
+  }
+};
+/* 按主题生成题目（本地知识库，避免主题无关） */
+function quizForTopic(subject, topic, level){
+  var pick=function(arr){return arr[Math.floor(Math.random()*arr.length)];};
+  var L=level==='easy'?'easy':(level==='进阶'?'进阶':'挑战');
+  var matched=null;
+  var keys=Object.keys(TOPIC_QUIZ);
+  for(var i=0;i<keys.length;i++){
+    if(topic.indexOf(keys[i])>-1||keys[i].indexOf(topic)>-1){matched=keys[i];break;}
+  }
+  if(matched){
+    var pool=TOPIC_QUIZ[matched][L]||TOPIC_QUIZ[matched]['easy'];
+    if(pool&&pool.length){return pick(pool);}
+  }
+  /* 参数化通用题：同一主题可生成不同变体，避免重复 */
+  var gen={
+    '数学':function(){
+      var t=pick(['加法','减法','乘法','比大小','应用题']);
+      if(t==='加法'){var a=rand(12,99),b=rand(12,99);return {q:'计算：'+a+' + '+b+' = ?',ans:a+b};}
+      if(t==='减法'){var c=rand(30,99),d=rand(1,c-1);return {q:'计算：'+c+' - '+d+' = ?',ans:c-d};}
+      if(t==='乘法'){var e=rand(2,9),f=rand(2,9);return {q:'计算：'+e+' × '+f+' = ?',ans:e*f};}
+      if(t==='比大小'){var g=rand(10,99),h=rand(10,99);return {q:'比较大小：'+g+' ○ '+h,ans:g>h?'大于':(g<h?'小于':'等于')};}
+      var m=rand(10,99),n=rand(1,m-1);return {q:'列式计算：'+m+' 比 '+n+' 多多少？',ans:m-n};
+    },
+    '语文':function(){
+      var t=pick(['词语','造句','古诗','阅读']);
+      if(t==='词语')return {q:'写出与「'+topic+'」相关的词语（至少2个）。',ans:'开放性'};
+      if(t==='造句')return {q:'用「'+topic+'」写一个通顺的句子。',ans:'开放性'};
+      if(t==='古诗')return {q:'围绕「'+topic+'」回忆一首学过的古诗并默写。',ans:'开放性'};
+      return {q:'围绕「'+topic+'」写一小段话（50字左右）。',ans:'开放性'};
+    },
+    '科学':function(){
+      var t=pick(['问题','观察','实验','联系']);
+      if(t==='问题')return {q:'围绕「'+topic+'」提出一个可以探究的问题。',ans:'开放性'};
+      if(t==='观察')return {q:'如果观察「'+topic+'」，你会记录哪些现象？',ans:'开放性'};
+      if(t==='实验')return {q:'针对「'+topic+'」设计一个简单实验验证你的猜想。',ans:'开放性'};
+      return {q:'「'+topic+'」与我们生活有什么联系？举例说明。',ans:'开放性'};
+    },
+    '英语':function(){
+      var t=pick(['翻译','单词','造句','对话']);
+      if(t==='翻译')return {q:'用英语翻译：「'+topic+'」。',ans:'开放性'};
+      if(t==='单词')return {q:'写出与「'+topic+'」相关的3个英语单词。',ans:'开放性'};
+      if(t==='造句')return {q:'用"I like ..."句型写一个关于「'+topic+'」的句子。',ans:'开放性'};
+      return {q:'设计一个关于「'+topic+'」的英语情景对话（2-3句）。',ans:'开放性'};
+    },
+    '信息技术':function(){
+      var t=pick(['AI应用','逻辑','提示词','安全']);
+      if(t==='AI应用')return {q:'结合「'+topic+'」简述如何用AI工具完成一件事。',ans:'开放性'};
+      if(t==='逻辑')return {q:'用流程图表示：判断「'+topic+'」是否完成。',ans:'开放性'};
+      if(t==='提示词')return {q:'为「'+topic+'」写一条合适的AI提示词。',ans:'开放性'};
+      return {q:'在使用AI时，关于「'+topic+'」要注意哪些信息安全问题？',ans:'开放性'};
+    }
+  };
+  var g=gen[subject]||gen['科学'];
+  return g();
+}
+function rand(a,b){return a+Math.floor(Math.random()*(b-a+1));}
+function genQuiz(){
+  var subject=$('quiz-subject').value,grade=$('quiz-grade').value,topic=$('quiz-topic').value.trim();
+  var level=$('quiz-level').value,count=parseInt($('quiz-count').value)||5;
+  if(!topic){toast('请输入知识点/主题');return;}
+  $('quiz-empty').style.display='none';
+  $('quiz-output').classList.remove('show');
+  $('quiz-loading').classList.add('show');
+  setTimeout(function(){
+    var zk=null;
+    for(var k in ZJ_QUIZ){if(topic.indexOf(k)>-1){zk=k;break;}}
+    var html='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">'
+      +'<span style="font-size:15px;font-weight:600;color:var(--primary-dark)">《'+esc(topic)+'》 '+grade+subject+'练习（'+levelName(level)+'）</span>'
+      +'<div><button class="btn sm outline" onclick="saveQuiz()">保存题目</button> <button class="btn sm ghost" onclick="printQuiz()">打印</button></div></div>';
+    var used={};
+    var zjDone=false;
+    for(var i=1;i<=count;i++){
+      var item=null;
+      if(zk && !zjDone){item={q:ZJ_QUIZ[zk],ans:'见答案解析',zj:true};zjDone=true;}
+      else{
+        var tries=0;
+        do{
+          item=quizForTopic(subject, topic, level)||{q:'结合「'+topic+'」完成探究任务。',ans:'开放性'};
+          tries++;
+        }while((used[item.q]||used[item.q+item.ans])&&tries<40);
+        used[item.q]=1;used[item.q+item.ans]=1;
+      }
+      var type=(item.zj?'湛江情境题':'综合题');
+      html+= '<div class="plan-block" style="border-left:3px solid '+(level==='easy'?'#10b981':(level==='进阶'?'#f59e0b':'#ef4444'))+'">'
+        +'<b>'+i+'. '+esc(type)+(item.zj?'（湛江情境题）':'')+'</b>'
+        +'<p style="margin-top:6px;font-size:13px">'+esc(item.q)+'</p>'
+        +'<div style="margin-top:8px;color:var(--green);font-size:12px">✅ 答案：'+esc(item.ans)+'</div>'
+        +'</div>';
+    }
+    $('quiz-loading').classList.remove('show');
+    $('quiz-output').innerHTML=html;
+    $('quiz-output').classList.add('show');
+    S.quiz.push({topic:topic,level:level,count:count,time:new Date().toISOString()});
+    S.save('quiz');
+    $('stat-quiz').textContent=S.quiz.reduce(function(a,q){return a+q.count},0);
+    toast('题目生成完成');
+  },700);
+}
+function levelName(level){return level==='easy'?'基础':(level==='进阶'?'进阶':'挑战');}
+function saveQuiz(){var el=$('quiz-output');if(!el.classList.contains('show')){toast('请先生成题目');return;}var blob=new Blob([el.innerText],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='智学灯塔-练习题.txt';a.click();toast('题目已导出');}
+function printQuiz(){var el=$('quiz-output');if(!el.classList.contains('show')){toast('请先生成题目');return;}var w=window.open('');w.document.write('<html><head><title>练习题</title><style>body{font-family:simsun;padding:30px}li{margin:8px 0}</style></head><body>'+el.innerHTML+'</body></html>');w.document.close();w.print();}
+
+/* ================= 4. AI助教 ================= */
+var AI_CFG={};
+try{AI_CFG=JSON.parse(localStorage.getItem('zx_ai_cfg')||'{}');}catch(e){AI_CFG={};}
+function sendChat(){
+  var input=$('chat-input');var q=input.value.trim();if(!q)return;
+  addMsg('user',q);input.value='';
+  if(!openReply(q)){setTimeout(function(){addMsg('ai',localAnswer(q));},600);}
+}
+function quickChat(q){addMsg('user',q);if(!openReply(q)){setTimeout(function(){addMsg('ai',localAnswer(q));},500);}}
+/* 统一的大模型调用：兼容多种返回格式，出错时显示真实原因 */
+function openReply(q){
+  if(!AI_CFG.key||!AI_CFG.endpoint)return false;
+  addMsg('ai','小灯正在思考…');
+  fetch(AI_CFG.endpoint,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+AI_CFG.key},
+    body:JSON.stringify({
+      model:AI_CFG.model||'deepseek-chat',
+      messages:[
+        {role:'system',content:'你是一位资深的小学教师教学顾问「小灯」，擅长教学设计、学情分析、课堂组织、跨学科融合（尤其湛江红树林/海洋/非遗等本土文化）。回答要专业、具体、可操作，分点呈现，控制在300字内。'},
+        {role:'user',content:q}
+      ],
+      temperature:0.7,
+      max_tokens:1024
+    })
+  }).then(function(r){
+    return r.text().then(function(txt){
+      /* 先拿到原始文本，兼容JSON解析失败的情况 */
+      var d=null;
+      try{d=JSON.parse(txt);}catch(e){}
+      if(!r.ok||!d){
+        /* HTTP错误或非JSON响应 */
+        var hint=(txt||'').slice(0,150)||('HTTP '+r.status);
+        return {__err:'⚠ 调用失败（HTTP '+r.status+'）：'+hint+'\n请检查：①API Key是否正确有效；②所选服务商与Key是否匹配；③账户是否有额度。'};
+      }
+      /* 标准OpenAI格式（含智谱/硅基/百炼/DeepSeek/Kimi） */
+      if(d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content){
+        return {__ok:d.choices[0].message.content};
+      }
+      /* 错误响应：提取真实错误信息 */
+      var em='';
+      if(d.error){em=(d.error.message||d.error.code||'未知错误');}
+      else if(d.message){em=d.message;}
+      else{em=JSON.stringify(d).slice(0,120);}
+      return {__err:'⚠ 接口返回错误：'+em+'\n常见原因：①Key无效或过期；②模型名不匹配（硅基流动需带厂商前缀，如 Qwen/Qwen2.5-7B-Instruct，可在“AI设置”重新选择预设）；③账户额度不足。'};
+    });
+  }).then(function(res){
+    /* 替换“正在思考”占位消息 */
+    var box=chatBox();
+    var msgs=box.querySelectorAll('.msg.ai');
+    var last=msgs[msgs.length-1];
+    if(last&&last.textContent.indexOf('小灯正在思考')>-1){box.removeChild(last);}
+    if(res&&res.__ok){addMsg('ai',res.__ok);}
+    else{addMsg('ai',res&&res.__err?res.__err:'调用失败，请检查网络或稍后重试。');}
+  }).catch(function(e){
+    var box=chatBox();
+    var msgs=box.querySelectorAll('.msg.ai');
+    var last=msgs[msgs.length-1];
+    if(last&&last.textContent.indexOf('小灯正在思考')>-1){box.removeChild(last);}
+    addMsg('ai','⚠ 请求未能发出：'+(e&&e.message?e.message:'网络或跨域问题')+ '\n若是双击打开本地文件，建议将页面部署到静态空间（如GitHub Pages）后再调用；或改用内置知识库（清除AI配置即可）。');
+  });
+  return true;
+}
+/* 本地深度知识库：多主题匹配，回答具体 */
+var AGENT_DEEP={
+  '备课|教案|教学设计':function(q){return '建议从五步设计：\n1. 目标：依据课标明晰知识与技能、过程与方法、情感目标；\n2. 学情：用「学情诊断」掌握班级薄弱点；\n3. 情境：用生活/湛江本土素材导入（如红树林、海洋文化）；\n4. 活动：安排自主探究+小组合作+分层任务；\n5. 评价：过程性评价与表现性评价结合。\n可直接用本平台「AI备课助手」自动生成初稿再二次备课。';},
+  '学困生':function(q){return '学困生辅导策略：\n1. 先定位：用「学情诊断」找出薄弱知识点；\n2. 降坡：把任务拆解成小步子，一次只突破一个点；\n3. 强反馈：及时肯定，积累自信；\n4. 多感官：结合图表、实物、动作帮助理解；\n5. 家校协同：与家长沟通每天落实10分钟巩固。\n建议每周一次「加油站」式分层练习。';},
+  '红树林|湿地|生态|海岸':function(q){return '把湛江红树林融入课堂的方法：\n1. 情境导入：展示红树林"胎生""泌盐"等奇特现象图片或视频；\n2. 探究活动：做"盐水对红树幼苗的影响"小实验；\n3. 数据统计：调查红树林常见鸟类，绘制统计图；\n4. 跨学科：美术画红树林、语文写观察日记、科学做实验；\n5. 责任教育：发起"守护海岸卫士"倡议行动。\n课程库里已有「红树林生态探秘」资源可直接使用。';},
+  '个性化|分层|差异化|因材施教':function(q){return '个性化学习的落地方法：\n1. 诊断：课前用「学情诊断」了解每个孩子掌握情况；\n2. 分层：把任务分成"基础—进阶—挑战"三层自选；\n3. 推送：根据薄弱点定向推荐练习（平台「智能出题」可按知识点出题）；\n4. 追踪：用记录卡记录每周进步，动态调整层次；\n5. 反馈：AI助教可即时答疑，减少等待时间。\n让每个孩子都在自己的"最近发展区"学习。';},
+  '课堂活动|互动|游戏':function(q){return '课堂活力提升活动库：\n1. 小组积分赛（抢答+合作任务）；\n2. 角色扮演/情景表演；\n3. 快问快答卡牌；\n4. 思维导图共创；\n5. 作品展示会与同伴互评。\n注意控制节奏，让每个学生都能参与。';},
+  '评价|量规|评分':function(q){return '评价设计建议：\n1. 课堂观察量表（习惯、参与、表达）；\n2. 作品档案袋（过程性作品收集）；\n3. 自评互评表（结构化评分项）；\n4. 成长记录册（纵向对比）；\n5. AI学情报告（数据化画像）。\n评价要具体、可观察、可激励。';},
+  '班级管理|纪律|秩序|课堂管理':function(q){return '课堂管理实用策略：\n1. 建立清晰规则（少而具体）；\n2. 正面激励多于批评；\n3. 用眼神/手势等非语言提示；\n4. 设计快速过渡环节，减少等待；\n5. 尊重个体差异，温和而坚定。\n稳定而富有爱心的班级氛围最有利于学习。';},
+  '作业设计|分层作业':function(q){return '作业分层设计建议：\n1. 基础作业：全体必做（巩固核心知识）；\n2. 提升作业：选做（变式+应用）；\n3. 挑战作业：创意/综合（如小课题）；\n4. 反馈：及时批改+个性化评语；\n5. 可以用平台「智能出题」生成不同难度的题目。';},
+  '科学课':function(q){return '科学课"做中学"设计：\n1. 真实情境导入（如湛江红树林候鸟、海洋生物）；\n2. 猜想—实验—验证三步；\n3. 小组合作 + 动手观察记录；\n4. 可视化（视频/模型/图表）；\n5. 开放性问题收尾，引出下一步探究。';},
+  '数学|计算|解题':function(q){return '小学数学教学建议：\n1. 概念先建构（用实物、图形、情境），再教算理；\n2. 口算天天练（5分钟热身）；\n3. 错题本：分析错因类型（概念/计算/审题）；\n4. 变式训练：同一知识点换情境；\n5. 应用题注重"数量关系+画图策略"。\n可用「学情诊断」找准班级薄弱点。';},
+  '语文|阅读|写作|古诗':function(q){return '语文教学建议：\n1. 朗读为纲：多读、品读、美读；\n2. 识字写字：趣味情境+规范书写；\n3. 阅读：抓要素（六要素）+批注式阅读；\n4. 写作：先说后写，搭支架（思维导图）；\n5. 古诗：画诗、唱诗、演诗多维感受。';},
+  '英语|单词|口语':function(q){return '小学英语教学建议：\n1. 情境交际：真实语境反复操练；\n2. 游戏化记单词（大小声、萝卜蹲等）；\n3. 视听资源：歌曲、动画、绘本；\n4. 口语输出：Role-play、Daily report；\n5. 分层任务：基础朗读+拓展表达。';}
+};
+function localAnswer(q){
+  var out=null;
+  var keys=Object.keys(AGENT_DEEP);
+  for(var i=0;i<keys.length;i++){
+    var kws=keys[i].split('|');
+    for(var j=0;j<kws.length;j++){
+      if(q.indexOf(kws[j])>-1){out=AGENT_DEEP[keys[i]](q);break;}
+    }
+    if(out)break;
+  }
+  if(!out&&(q.indexOf('你好')>-1||q.indexOf('你是谁')>-1))out='你好！我是教学智能体「小灯」，可以帮你备课设计、学情分析、出题、课堂活动策划，也可以聊聊湛江特色课程。试试问我："怎么给学困生辅导？"或"如何融入红树林教育？"';
+  if(!out)out='关于「'+q+'」，结合我的知识库，建议从"目标—内容—活动—评价"四步设计。如果你想了解某学科具体教学法或本土课程融合，告诉我学科与年级，我可以给出更有针对性的建议。你也可以先问：科学课设计、学困生辅导、红树林课堂、个性化学习。';
+  return out;
+}
+function chatBox(){return $('chat-box')}
+function addMsg(role,text){
+  var box=chatBox();
+  var div=document.createElement('div');div.className='msg '+role;
+  div.innerHTML='<div class="sender">'+(role==='ai'?'小灯 · AI助教':'何老师')+'</div>'+esc(text).replace(/\n/g,'<br>');
+  box.appendChild(div);box.scrollTop=box.scrollHeight;
+}
+(function(){
+  addMsg('ai','你好，何老师！我是教学智能体「小灯」。你可以问我备课设计、学困生辅导、湛江红树林课程融合、个性化学习等任何教学问题。如需接入真实大模型，请点右上角「AI设置」配置API密钥。');
+  var tips=['让课堂"活"起来，用"情境导入+游戏化任务"结构；','善用学情诊断，把精力留给个性化辅导；','把湛江红树林、海洋文化转化为跨学科课程，学生更感兴趣。'];
+  var tc=$('tipCard');if(tc)tc.innerHTML=tips.map(function(t){return '<div style="margin:4px 0">· '+t+'</div>';}).join('');
+})();
+/* AI 设置 */
+var AI_PRESETS=[
+  {name:'智谱AI（推荐·完全免费）',endpoint:'https://open.bigmodel.cn/api/paas/v4/chat/completions',model:'glm-4-flash',tip:'手机号注册即送2000万Token，GLM-4-Flash永久免费，128K上下文'},
+  {name:'硅基流动（免费额度大）',endpoint:'https://api.siliconflow.cn/v1/chat/completions',model:'Qwen/Qwen2.5-7B-Instruct',tip:'注册送2000万Token；注意：模型名必须带厂商前缀（如 Qwen/Qwen2.5-7B-Instruct），Key在 siliconflow.cn 左侧「API密钥」新建'},
+  {name:'阿里云百炼（送1000万）',endpoint:'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',model:'qwen-plus',tip:'注册即送1000万Token，通义千问全系列'},
+  {name:'百度千帆（永久免费）',endpoint:'https://qianfan.baidubce.com/v2/chat/completions',model:'ernie-speed-8k',tip:'ERNIE-Speed 永久免费，百度生态稳定'},
+  {name:'DeepSeek（官方接口）',endpoint:'https://api.deepseek.com/v1/chat/completions',model:'deepseek-chat',tip:'注册送小额体验金，性价比高'},
+  {name:'Kimi·月之暗面',endpoint:'https://api.moonshot.cn/v1/chat/completions',model:'moonshot-v1-8k',tip:'新用户送15元代金券，长上下文出色'}
+];
+function openAISettings(){
+  var cfg=AI_CFG||{};
+  var m=$('modal-box');
+  var presets='<option value="">— 选择免费服务商自动填入 —</option>';
+  for(var i=0;i<AI_PRESETS.length;i++){
+    presets+='<option value="'+i+'">'+AI_PRESETS[i].name+'</option>';
+  }
+  m.innerHTML='<span class="close" onclick="closeModal()">×</span>'
+    +'<h3>AI 大模型设置</h3>'
+    +'<p class="sub" style="font-size:12px;color:var(--text2);margin-bottom:12px">选择下方免费服务商可自动填入接口与模型，再填入你的API Key即可启用真实大模型；不配置则使用内置教学知识库。</p>'
+    +'<label>选择免费服务商</label><select id="ai-preset" onchange="applyPreset()">'+presets+'</select>'
+    +'<div id="ai-preset-tip" class="sub" style="font-size:12px;color:var(--primary-dark);margin-top:6px"></div>'
+    +'<label>API 接口地址</label><input id="ai-endpoint" placeholder="https://..." value="'+esc(cfg.endpoint||'')+'">'
+    +'<label>API Key（点此获取）</label><input id="ai-key" type="password" placeholder="注册后复制 Key 粘贴到此" value="'+esc(cfg.key||'')+'">'
+    +'<label>模型名称</label><input id="ai-model" placeholder="模型名" value="'+esc(cfg.model||'')+'">'
+    +'<div style="margin-top:16px;display:flex;gap:10px">'
+    +'<button class="btn" onclick="saveAICfg()">保存配置</button>'
+    +'<button class="btn ghost" onclick="closeModal()">取消</button>'
+    +'<button class="btn danger" onclick="clearAICfg()">清除</button></div>'
+    +'<p class="sub" style="margin-top:12px;font-size:12px;color:var(--text3)">Key 仅保存在本机浏览器中，不会上传。若双击打开无法调用（浏览器跨域限制），可将页面部署到任意静态空间后再使用。</p>';
+  $('modal-mask').classList.add('show');
+}
+function applyPreset(){
+  var idx=$('ai-preset').value;
+  if(idx===''){$('ai-endpoint').value='';$('ai-model').value='';$('ai-preset-tip').textContent='';return;}
+  var p=AI_PRESETS[parseInt(idx)];
+  $('ai-endpoint').value=p.endpoint;
+  $('ai-model').value=p.model;
+  $('ai-preset-tip').textContent='💡 '+p.tip;
+}
+function saveAICfg(){
+  AI_CFG={endpoint:$('ai-endpoint').value.trim(),key:$('ai-key').value.trim(),model:$('ai-model').value.trim()};
+  localStorage.setItem('zx_ai_cfg',JSON.stringify(AI_CFG));
+  closeModal();toast('AI 配置已保存');
+}
+function clearAICfg(){AI_CFG={};localStorage.removeItem('zx_ai_cfg');closeModal();toast('已清除AI配置');}
+
+/* ================= 5. 课程库 ================= */
+const COURSES=[
+  {icon:'🌿',t:'红树林生态探秘',d:'跨学科：科学+语文+美术。认识红树林"胎生""泌盐"秘密，制作生态观察记录。',lv:'科学·综合',color:'#0e9f6e'},
+  {icon:'🌊',t:'智慧海洋牧场',d:'信息技术+数学：用AI传感器了解智慧养殖，设计"小小海洋牧场"方案。',lv:'信息·数学',color:'#2563eb'},
+  {icon:'🐉',t:'吴川飘色·非遗传承',d:'综合实践+美术：了解湛江非遗"吴川飘色"背后的工匠精神，动手创意设计。',lv:'美术·综合',color:'#7c3aed'},
+  {icon:'⚓',t:'南海舰队·国防教育',d:'道德与法治+历史：致敬中国海军，培养爱国情怀，学习军事小知识。',lv:'法治·语文',color:'#dc2626'},
+  {icon:'🐚',t:'雷州石狗文化',d:'美术+语文：认识雷州石狗"雷"文化，动手绘画与创作石狗传说故事。',lv:'美术·语文',color:'#d97706'},
+  {icon:'🏙',t:'未来智慧城市畅想',d:'信息技术+科学：畅想AI城市管理，设计"我的智慧湛江"方案。',lv:'信息·科学',color:'#0891b2'}
+];
+function renderCourses(){
+  $('course-grid').innerHTML=COURSES.map((c,i)=>`<div class="card course" onclick="openCourse(${i})">
+    <div class="level">${c.lv}</div>
+    <div class="cover" style="background:linear-gradient(135deg,${c.color},${c.color}bb)">${c.t}</div>
+    <h4>${c.t}</h4><p>${c.d}</p>
+  </div>`).join('');
+}
+function openCourse(i){
+  const c=COURSES[i];
+  const m=$('modal-box');
+  m.innerHTML=`<span class="close" onclick="closeModal()">×</span>
+  <h3>${c.t}</h3>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px"><span class="tag">${c.lv}</span><span class="tag green">湛江特色</span><span class="tag orange">跨学科</span></div>
+  <div class="plan-block"><b>课程简介</b><p style="margin-top:6px">${c.d}</p></div>
+  <div class="plan-block"><b>AI融入建议</b><ul><li>用AI生成情境图/数字绘本/讲解音频（见演示视频）</li><li>调用"AI助教"针对本主题解答学生的奇思妙想</li><li>用"智能出题"生成跨学科评价题</li></ul></div>
+  <div class="plan-block"><b>课程特色</b><ul><li>体现湛江本土文化+时代关怀</li><li>多学科融合，培育综合素养</li></ul></div>
+  <button class="btn btn-block" onclick="toast('已加入备课，可到「AI智能备课」页使用该资源')">应用到备课</button>`;
+  $('modal-mask').classList.add('show');
+}
+function closeModal(){$('modal-mask').classList.remove('show')}
+$('modal-mask').onclick=e=>{if(e.target===$('modal-mask'))closeModal()};
+
+/* ============ 初始化 ============ */
+initDiagInputs();
+renderCourses();
+</script>
+</body>
+</html>
